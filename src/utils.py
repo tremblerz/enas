@@ -1,6 +1,6 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+
+
+
 
 import sys
 import numpy as np
@@ -235,7 +235,7 @@ def get_train_ops(
       opt, average_decay=moving_average)
 
   train_op = opt.apply_gradients(
-    zip(grads, tf_variables), global_step=train_step)
+    list(zip(grads, tf_variables)), global_step=train_step)
 
   if get_grad_norms:
     return train_op, learning_rate, grad_norm, opt, grad_norms
