@@ -170,6 +170,7 @@ def get_ops(images, labels):
 
     child_model.connect_controller(controller_model)
     controller_model.build_trainer(child_model)
+    #exit()
 
     controller_ops = {
       "train_step": controller_model.train_step,
@@ -238,11 +239,13 @@ def train():
 
     print("-" * 80)
     print("Starting session")
+    count = 0
     config = tf.ConfigProto(allow_soft_placement=True)
     with tf.train.SingularMonitoredSession(
       config=config, hooks=hooks, checkpoint_dir=FLAGS.output_dir) as sess:
         start_time = time.time()
         while True:
+          count += 1
           run_ops = [
             child_ops["loss"],
             child_ops["lr"],
@@ -259,7 +262,7 @@ def train():
             actual_step = global_step
           epoch = actual_step // ops["num_train_batches"]
           curr_time = time.time()
-          if global_step % FLAGS.log_every == 0:
+          """if global_step % FLAGS.log_every == 0:
             log_string = ""
             log_string += "epoch={:<6d}".format(epoch)
             log_string += "ch_step={:<6d}".format(global_step)
@@ -270,12 +273,13 @@ def train():
                 tr_acc, FLAGS.batch_size)
             log_string += " mins={:<10.2f}".format(
                 float(curr_time - start_time) / 60)
-            print(log_string)
+            print(log_string)"""
             
           if actual_step % ops["eval_every"] == 0:
             if (FLAGS.controller_training and
                 epoch % FLAGS.controller_train_every == 0):
               print("Epoch {}: Training controller".format(epoch))
+              avg_loss = 0
               for ct_step in range(FLAGS.controller_train_steps *
                                     FLAGS.controller_num_aggregate):
                 run_ops = [
@@ -290,8 +294,9 @@ def train():
                 ]
                 loss, entropy, lr, gn, val_acc, bl, skip, _ = sess.run(run_ops)
                 controller_step = sess.run(controller_ops["train_step"])
+                avg_loss += loss
 
-                if ct_step % FLAGS.log_every == 0:
+                """if ct_step % FLAGS.log_every == 0:
                   curr_time = time.time()
                   log_string = ""
                   log_string += "ctrl_step={:<6d}".format(controller_step)
@@ -303,9 +308,9 @@ def train():
                   log_string += " bl={:<5.2f}".format(bl)
                   log_string += " mins={:<.2f}".format(
                       float(curr_time - start_time) / 60)
-                  print(log_string)
-
-              print("Here are 10 architectures")
+                  print(log_string)"""
+              print("Average loss after count {} is {}".format(count, avg_loss))
+              """print("Here are 10 architectures")
               for _ in range(10):
                 arc, acc = sess.run([
                   controller_ops["sample_arc"],
@@ -325,9 +330,9 @@ def train():
                     print(np.reshape(arc[start: end], [-1]))
                     start = end
                 print("val_acc={:<6.4f}".format(acc))
-                print("-" * 80)
+                print("-" * 80)"""
 
-            print("Epoch {}: Eval".format(epoch))
+            #print("Epoch {}: Eval".format(epoch))
             if FLAGS.child_fixed_arc is None:
               ops["eval_func"](sess, "valid")
             ops["eval_func"](sess, "test")

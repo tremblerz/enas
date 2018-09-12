@@ -232,8 +232,9 @@ class GeneralChild(Model):
       if is_training:
         x = tf.nn.dropout(x, self.keep_prob)
       with tf.variable_scope("fc"):
-        if self.data_format == "NWHC":
-          inp_c = x.get_shape()[3].value
+        if self.data_format == "NHWC":
+          #print(x)
+          inp_c = x.get_shape()[-1].value
         elif self.data_format == "NCHW":
           inp_c = x.get_shape()[1].value
         else:
@@ -263,6 +264,7 @@ class GeneralChild(Model):
         inp_h = inputs.get_shape()[2].value
         inp_w = inputs.get_shape()[3].value
 
+      print(self.sample_arc)
       count = self.sample_arc[start_idx]
       branches = {}
       with tf.variable_scope("branch_0"):
@@ -594,6 +596,7 @@ class GeneralChild(Model):
   def _build_train(self):
     print("-" * 80)
     print("Build train graph")
+    print(self.x_train)
     logits = self._model(self.x_train, is_training=True)
     log_probs = tf.nn.sparse_softmax_cross_entropy_with_logits(
       logits=logits, labels=self.y_train)

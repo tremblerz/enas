@@ -3,7 +3,7 @@
 export PYTHONPATH="$(pwd)"
 
 python src/cifar10/main.py \
-  --data_format="NCHW" \
+  --data_format="NHWC" \
   --search_for="macro" \
   --reset_output_dir \
   --data_path="data/cifar10" \

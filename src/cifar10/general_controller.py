@@ -53,7 +53,7 @@ class GeneralController(Controller):
     self.out_filters = out_filters
 
     self.lstm_size = lstm_size
-    self.lstm_num_layers = lstm_num_layers 
+    self.lstm_num_layers = lstm_num_layers
     self.lstm_keep_prob = lstm_keep_prob
     self.tanh_constant = tanh_constant
     self.temperature = temperature
@@ -254,6 +254,7 @@ class GeneralController(Controller):
 
     arc_seq = tf.concat(arc_seq, axis=0)
     self.sample_arc = tf.reshape(arc_seq, [-1])
+    # self.sample_arc = tf.Print(self.sample_arc, [self.sample_arc], message="DEBUG:")
 
     entropys = tf.stack(entropys)
     self.sample_entropy = tf.reduce_sum(entropys)
