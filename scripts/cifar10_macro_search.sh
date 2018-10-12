@@ -9,7 +9,7 @@ python src/cifar10/main.py \
   --data_path="data/cifar10" \
   --output_dir="outputs" \
   --batch_size=128 \
-  --num_epochs=310 \
+  --num_epochs=20 \
   --log_every=50 \
   --eval_every_epochs=1 \
   --child_use_aux_heads \

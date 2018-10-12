@@ -259,7 +259,7 @@ def train():
             actual_step = global_step
           epoch = actual_step // ops["num_train_batches"]
           curr_time = time.time()
-          if global_step % FLAGS.log_every == 0:
+          '''if global_step % FLAGS.log_every == 0:
             log_string = ""
             log_string += "epoch={:<6d}".format(epoch)
             log_string += "ch_step={:<6d}".format(global_step)
@@ -270,8 +270,8 @@ def train():
                 tr_acc, FLAGS.batch_size)
             log_string += " mins={:<10.2f}".format(
                 float(curr_time - start_time) / 60)
-            print(log_string)
-            
+            print(log_string)'''
+
           if actual_step % ops["eval_every"] == 0:
             if (FLAGS.controller_training and
                 epoch % FLAGS.controller_train_every == 0):
@@ -291,7 +291,7 @@ def train():
                 loss, entropy, lr, gn, val_acc, bl, skip, _ = sess.run(run_ops)
                 controller_step = sess.run(controller_ops["train_step"])
 
-                if ct_step % FLAGS.log_every == 0:
+                if ct_step % 10 == 0:
                   curr_time = time.time()
                   log_string = ""
                   log_string += "ctrl_step={:<6d}".format(controller_step)
