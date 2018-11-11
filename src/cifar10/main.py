@@ -52,7 +52,7 @@ DEFINE_integer("child_lr_T_0", None, "for lr schedule")
 DEFINE_integer("child_lr_T_mul", None, "for lr schedule")
 DEFINE_integer("child_cutout_size", None, "CutOut size")
 DEFINE_float("child_grad_bound", 5.0, "Gradient clipping")
-DEFINE_float("child_lr", 0.1, "")
+DEFINE_float("child_lr", 0.01, "")
 DEFINE_float("child_lr_dec_rate", 0.1, "")
 DEFINE_float("child_keep_prob", 0.5, "")
 DEFINE_float("child_drop_path_keep_prob", 1.0, "minimum drop_path_keep_prob")
@@ -166,7 +166,8 @@ def get_ops(images, labels):
       optim_algo="adam",
       sync_replicas=FLAGS.controller_sync_replicas,
       num_aggregate=FLAGS.controller_num_aggregate,
-      num_replicas=FLAGS.controller_num_replicas)
+      num_replicas=FLAGS.controller_num_replicas,
+      total_epochs=FLAGS.num_epochs)
 
     child_model.connect_controller(controller_model)
     controller_model.build_trainer(child_model)
@@ -238,11 +239,36 @@ def train():
 
     print("-" * 80)
     print("Starting session")
+    beginning = True
     config = tf.ConfigProto(allow_soft_placement=True)
     with tf.train.SingularMonitoredSession(
       config=config, hooks=hooks, checkpoint_dir=FLAGS.output_dir) as sess:
         start_time = time.time()
         while True:
+          if beginning:
+              beginning = False
+              print("Here are 50 architectures")
+              for _ in range(50):
+                arc, acc = sess.run([
+                  controller_ops["sample_arc"],
+                  controller_ops["valid_acc"],
+                ])
+                if FLAGS.search_for == "micro":
+                  normal_arc, reduce_arc = arc
+                  print(np.reshape(normal_arc, [-1]))
+                  print(np.reshape(reduce_arc, [-1]))
+                else:
+                  start = 0
+                  for layer_id in range(FLAGS.child_num_layers):
+                    if FLAGS.controller_search_whole_channels:
+                      end = start + 1 + layer_id
+                    else:
+                      end = start + 2 * FLAGS.child_num_branches + layer_id
+                    print(np.reshape(arc[start: end], [-1]))
+                    start = end
+                print("val_acc={:<6.4f}".format(acc))
+                print("-" * 80)
+          break
           run_ops = [
             child_ops["loss"],
             child_ops["lr"],
@@ -259,7 +285,7 @@ def train():
             actual_step = global_step
           epoch = actual_step // ops["num_train_batches"]
           curr_time = time.time()
-          if global_step % FLAGS.log_every == 0:
+          '''if global_step % FLAGS.log_every == 0:
             log_string = ""
             log_string += "epoch={:<6d}".format(epoch)
             log_string += "ch_step={:<6d}".format(global_step)
@@ -270,7 +296,7 @@ def train():
                 tr_acc, FLAGS.batch_size)
             log_string += " mins={:<10.2f}".format(
                 float(curr_time - start_time) / 60)
-            print(log_string)
+            print(log_string)'''
             
           if actual_step % ops["eval_every"] == 0:
             if (FLAGS.controller_training and
@@ -288,10 +314,10 @@ def train():
                   controller_ops["skip_rate"],
                   controller_ops["train_op"],
                 ]
-                loss, entropy, lr, gn, val_acc, bl, skip, _ = sess.run(run_ops)
+                loss, entropy, lr, gn, val_acc, bl, skip, _ = sess.run(run_ops, feed_dict={"epoch:0":epoch})
                 controller_step = sess.run(controller_ops["train_step"])
 
-                if ct_step % FLAGS.log_every == 0:
+                if ct_step % 10 == 0:
                   curr_time = time.time()
                   log_string = ""
                   log_string += "ctrl_step={:<6d}".format(controller_step)
@@ -305,8 +331,8 @@ def train():
                       float(curr_time - start_time) / 60)
                   print(log_string)
 
-              print("Here are 10 architectures")
-              for _ in range(10):
+              print("Here are 50 architectures")
+              for _ in range(50):
                 arc, acc = sess.run([
                   controller_ops["sample_arc"],
                   controller_ops["valid_acc"],

@@ -1,15 +1,12 @@
-#!/bin/bash
+import os
 
-export PYTHONPATH="$(pwd)"
-
-python src/cifar10/main.py \
+command = """python src/cifar10/main.py \
   --data_format="NCHW" \
   --search_for="macro" \
   --reset_output_dir \
   --data_path="data/cifar10" \
-  --output_dir="new_10" \
   --batch_size=128 \
-  --num_epochs=150 \
+  --controller_entropy_weight=0.5 \
   --log_every=50 \
   --eval_every_epochs=1 \
   --child_use_aux_heads \
@@ -26,7 +23,6 @@ python src/cifar10/main.py \
   --child_lr_T_mul=2 \
   --controller_training \
   --controller_search_whole_channels \
-  --controller_entropy_weight=0.5 \
   --controller_train_every=1 \
   --controller_sync_replicas \
   --controller_num_aggregate=20 \
@@ -35,6 +31,14 @@ python src/cifar10/main.py \
   --controller_tanh_constant=1.5 \
   --controller_op_tanh_reduce=2.5 \
   --controller_skip_target=0.4 \
-  --controller_skip_weight=0.8 \
-  "$@"
+  --controller_skip_weight=0.8"""
 
+experiments = {"new_1_1": 50, "new_1_2": 50, "new_1_3": 50,
+"new_2_1": 100, "new_2_2": 100, "new_2_3": 100,
+"new_3_1": 150, "new_3_2": 150, "new_3_3": 150}
+new_command = None
+for name, epochs in experiments.items():
+  new_command = command + " --output_dir=\"" + name + "\""
+  new_command += " --num_epochs=" + str(epochs)
+  print(new_command)
+  #os.system(new_command)

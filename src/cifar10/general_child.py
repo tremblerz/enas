@@ -38,7 +38,7 @@ class GeneralChild(Model):
                clip_mode=None,
                grad_bound=None,
                l2_reg=1e-4,
-               lr_init=0.1,
+               lr_init=0.01,
                lr_dec_start=0,
                lr_dec_every=10000,
                lr_dec_rate=0.1,

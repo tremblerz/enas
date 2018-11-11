@@ -40,6 +40,7 @@ class GeneralController(Controller):
                skip_target=0.8,
                skip_weight=0.5,
                name="controller",
+               total_epochs=21,
                *args,
                **kwargs):
 
@@ -76,6 +77,8 @@ class GeneralController(Controller):
     self.num_aggregate = num_aggregate
     self.num_replicas = num_replicas
     self.name = name
+    self.curr_epoch = tf.placeholder(dtype=tf.int32, name='epoch')
+    self.total_epochs = total_epochs
 
     self._create_params()
     self._build_sampler()
@@ -276,8 +279,11 @@ class GeneralController(Controller):
     normalize = tf.to_float(self.num_layers * (self.num_layers - 1) / 2)
     self.skip_rate = tf.to_float(self.skip_count) / normalize
 
-    if self.entropy_weight is not None:
-      self.reward += self.entropy_weight * self.sample_entropy
+    #if self.entropy_weight is not None:
+    #self.entropy_weight = tf.train.exponential_decay(self.entropy_weight, 
+    #    self.curr_epoch, self.total_epochs, 0.8)
+    #tf.summary.scalar("entropy_weight", self.entropy_weight)
+    self.reward += self.entropy_weight * self.sample_entropy
 
     self.sample_log_prob = tf.reduce_sum(self.sample_log_prob)
     self.baseline = tf.Variable(0.0, dtype=tf.float32, trainable=False)
