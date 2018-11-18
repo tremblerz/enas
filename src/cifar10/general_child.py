@@ -1,7 +1,3 @@
-
-
-
-
 import os
 import sys
 
@@ -291,6 +287,54 @@ class GeneralChild(Model):
           y = self._pool_branch(inputs, is_training, out_filters, "max",
                                 start_idx=0)
         branches[tf.equal(count, 5)] = lambda: y
+      with tf.variable_scope("branch_6"):
+        y = self._conv_branch(inputs, 2, is_training, out_filters, out_filters,
+                              start_idx=0)
+        branches[tf.equal(count, 6)] = lambda: y
+      with tf.variable_scope("branch_7"):
+        y = self._conv_branch(inputs, 4, is_training, out_filters, out_filters,
+                              start_idx=0)
+        branches[tf.equal(count, 7)] = lambda: y
+      with tf.variable_scope("branch_8"):
+        y = self._conv_branch(inputs, 6, is_training, out_filters, out_filters,
+                              start_idx=0, separable=True)
+        branches[tf.equal(count, 8)] = lambda: y
+      with tf.variable_scope("branch_9"):
+        y = self._conv_branch(inputs, [2,5], is_training, out_filters, out_filters,
+                              start_idx=0)
+        branches[tf.equal(count, 9)] = lambda: y
+      with tf.variable_scope("branch_10"):
+        y = self._conv_branch(inputs, [6,3], is_training, out_filters, out_filters,
+                              start_idx=0)
+        branches[tf.equal(count, 10)] = lambda: y
+      with tf.variable_scope("branch_11"):
+        y = self._conv_branch(inputs, [4,9], is_training, out_filters, out_filters,
+                              start_idx=0, separable=True)
+        branches[tf.equal(count, 11)] = lambda: y
+      with tf.variable_scope("branch_12"):
+        y = self._conv_branch(inputs, [9,3], is_training, out_filters, out_filters,
+                              start_idx=0, separable=True)
+        branches[tf.equal(count, 12)] = lambda: y
+      with tf.variable_scope("branch_13"):
+        y = self._conv_branch(inputs, [9,5], is_training, out_filters, out_filters,
+                              start_idx=0, separable=True)
+        branches[tf.equal(count, 13)] = lambda: y
+      with tf.variable_scope("branch_14"):
+        y = self._conv_branch(inputs, [1,6], is_training, out_filters, out_filters,
+                              start_idx=0)
+        branches[tf.equal(count, 14)] = lambda: y
+      with tf.variable_scope("branch_15"):
+        y = self._conv_branch(inputs, [3,4], is_training, out_filters, out_filters,
+                              start_idx=0, separable=True)
+        branches[tf.equal(count, 15)] = lambda: y
+      with tf.variable_scope("branch_16"):
+        y = self._conv_branch(inputs, [4,10], is_training, out_filters, out_filters,
+                              start_idx=0, separable=True)
+        branches[tf.equal(count, 16)] = lambda: y
+      with tf.variable_scope("branch_17"):
+        y = self._conv_branch(inputs, [10,5], is_training, out_filters, out_filters,
+                              start_idx=0, separable=True)
+        branches[tf.equal(count, 17)] = lambda: y
       out = tf.case(branches, default=lambda: tf.constant(0, tf.float32),
                     exclusive=True)
 
@@ -505,7 +549,8 @@ class GeneralChild(Model):
       x = batch_norm(x, is_training, data_format=self.data_format)
       x = tf.nn.relu(x)
 
-    with tf.variable_scope("out_conv_{}".format(filter_size)):
+    filter_size = [filter_size, filter_size] if type(filter_size) == int else filter_size
+    with tf.variable_scope("out_conv_{}-{}".format(filter_size[0], filter_size[1])):
       if start_idx is None:
         if separable:
           w_depth = create_weight(
@@ -515,12 +560,12 @@ class GeneralChild(Model):
                                      padding="SAME", data_format=self.data_format)
           x = batch_norm(x, is_training, data_format=self.data_format)
         else:
-          w = create_weight("w", [filter_size, filter_size, inp_c, count])
+          w = create_weight("w", [filter_size[0], filter_size[1], inp_c, count])
           x = tf.nn.conv2d(x, w, [1, 1, 1, 1], "SAME", data_format=self.data_format)
           x = batch_norm(x, is_training, data_format=self.data_format)
       else:
         if separable:
-          w_depth = create_weight("w_depth", [filter_size, filter_size, out_filters, ch_mul])
+          w_depth = create_weight("w_depth", [filter_size[0], filter_size[1], out_filters, ch_mul])
           w_point = create_weight("w_point", [out_filters, out_filters * ch_mul])
           w_point = w_point[start_idx:start_idx+count, :]
           w_point = tf.transpose(w_point, [1, 0])
@@ -533,7 +578,7 @@ class GeneralChild(Model):
           x = batch_norm_with_mask(
             x, is_training, mask, out_filters, data_format=self.data_format)
         else:
-          w = create_weight("w", [filter_size, filter_size, out_filters, out_filters])
+          w = create_weight("w", [filter_size[0], filter_size[1], out_filters, out_filters])
           w = tf.transpose(w, [3, 0, 1, 2])
           w = w[start_idx:start_idx+count, :, :, :]
           w = tf.transpose(w, [1, 2, 3, 0])

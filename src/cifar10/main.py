@@ -268,7 +268,6 @@ def train():
                     start = end
                 print("val_acc={:<6.4f}".format(acc))
                 print("-" * 80)
-          break
           run_ops = [
             child_ops["loss"],
             child_ops["lr"],

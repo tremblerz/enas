@@ -1,12 +1,12 @@
 import os
 
+os.environ['PYTHONPATH'] = os.getcwd()
 command = """python src/cifar10/main.py \
   --data_format="NCHW" \
   --search_for="macro" \
   --reset_output_dir \
   --data_path="data/cifar10" \
   --batch_size=128 \
-  --controller_entropy_weight=0.0001 \
   --log_every=50 \
   --eval_every_epochs=1 \
   --child_use_aux_heads \
@@ -33,10 +33,12 @@ command = """python src/cifar10/main.py \
   --controller_skip_target=0.4 \
   --controller_skip_weight=0.8"""
 
-experiments = {"new_1": 310, "new_2": 310, "new_3": 310}
+experiments = {"exp_1": [50, 100], "exp_2": [50, 10], "exp_3": [50, 1], "exp_4": [50, 0.1], "exp_5": [50, 0.01],
+"exp_6": [50, 0.001], "exp_7": [50, 0.0001], "exp_8": [50, 0.00001]}
 new_command = None
-for name, epochs in experiments.items():
+for name, (epochs, num) in experiments.items():
   new_command = command + " --output_dir=\"" + name + "\""
   new_command += " --num_epochs=" + str(epochs)
+  new_command += " --controller_entropy_weight=" +str(num) \
   #print(new_command)
   os.system(new_command)
