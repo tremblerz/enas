@@ -13,7 +13,7 @@ command = """python src/cifar10/main.py \
   --child_num_layers=12 \
   --child_out_filters=36 \
   --child_l2_reg=0.00025 \
-  --child_num_branches=6 \
+  --child_num_branches=28 \
   --child_num_cell_layers=5 \
   --child_keep_prob=0.90 \
   --child_drop_path_keep_prob=0.60 \
@@ -35,6 +35,7 @@ command = """python src/cifar10/main.py \
 
 experiments = {"exp_1": [50, 100], "exp_2": [50, 10], "exp_3": [50, 1], "exp_4": [50, 0.1], "exp_5": [50, 0.01],
 "exp_6": [50, 0.001], "exp_7": [50, 0.0001], "exp_8": [50, 0.00001]}
+experiments = {"exp_1": [300, 0.0001]}
 new_command = None
 for name, (epochs, num) in experiments.items():
   new_command = command + " --output_dir=\"" + name + "\""

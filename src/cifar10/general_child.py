@@ -300,41 +300,85 @@ class GeneralChild(Model):
                               start_idx=0, separable=True)
         branches[tf.equal(count, 8)] = lambda: y
       with tf.variable_scope("branch_9"):
-        y = self._conv_branch(inputs, [2,5], is_training, out_filters, out_filters,
+        y = self._conv_branch(inputs, 7, is_training, out_filters, out_filters,
                               start_idx=0)
         branches[tf.equal(count, 9)] = lambda: y
       with tf.variable_scope("branch_10"):
-        y = self._conv_branch(inputs, [6,3], is_training, out_filters, out_filters,
-                              start_idx=0)
+        y = self._conv_branch(inputs, 7, is_training, out_filters, out_filters,
+                              start_idx=0, separable=True)
         branches[tf.equal(count, 10)] = lambda: y
       with tf.variable_scope("branch_11"):
-        y = self._conv_branch(inputs, [4,9], is_training, out_filters, out_filters,
-                              start_idx=0, separable=True)
+        y = self._conv_branch(inputs, [2,5], is_training, out_filters, out_filters,
+                              start_idx=0)
         branches[tf.equal(count, 11)] = lambda: y
       with tf.variable_scope("branch_12"):
-        y = self._conv_branch(inputs, [9,3], is_training, out_filters, out_filters,
-                              start_idx=0, separable=True)
+        y = self._conv_branch(inputs, [5,2], is_training, out_filters, out_filters,
+                              start_idx=0)
         branches[tf.equal(count, 12)] = lambda: y
       with tf.variable_scope("branch_13"):
-        y = self._conv_branch(inputs, [9,5], is_training, out_filters, out_filters,
-                              start_idx=0, separable=True)
+        y = self._conv_branch(inputs, [3,6], is_training, out_filters, out_filters,
+                              start_idx=0)
         branches[tf.equal(count, 13)] = lambda: y
       with tf.variable_scope("branch_14"):
-        y = self._conv_branch(inputs, [1,6], is_training, out_filters, out_filters,
+        y = self._conv_branch(inputs, [6,3], is_training, out_filters, out_filters,
                               start_idx=0)
         branches[tf.equal(count, 14)] = lambda: y
       with tf.variable_scope("branch_15"):
-        y = self._conv_branch(inputs, [3,4], is_training, out_filters, out_filters,
+        y = self._conv_branch(inputs, [4,9], is_training, out_filters, out_filters,
                               start_idx=0, separable=True)
         branches[tf.equal(count, 15)] = lambda: y
       with tf.variable_scope("branch_16"):
-        y = self._conv_branch(inputs, [4,10], is_training, out_filters, out_filters,
+        y = self._conv_branch(inputs, [9,4], is_training, out_filters, out_filters,
                               start_idx=0, separable=True)
         branches[tf.equal(count, 16)] = lambda: y
       with tf.variable_scope("branch_17"):
-        y = self._conv_branch(inputs, [10,5], is_training, out_filters, out_filters,
+        y = self._conv_branch(inputs, [9,3], is_training, out_filters, out_filters,
                               start_idx=0, separable=True)
         branches[tf.equal(count, 17)] = lambda: y
+      with tf.variable_scope("branch_18"):
+        y = self._conv_branch(inputs, [3,9], is_training, out_filters, out_filters,
+                              start_idx=0, separable=True)
+        branches[tf.equal(count, 18)] = lambda: y
+      with tf.variable_scope("branch_19"):
+        y = self._conv_branch(inputs, [5,9], is_training, out_filters, out_filters,
+                              start_idx=0, separable=True)
+        branches[tf.equal(count, 19)] = lambda: y
+      with tf.variable_scope("branch_20"):
+        y = self._conv_branch(inputs, [9,5], is_training, out_filters, out_filters,
+                              start_idx=0, separable=True)
+        branches[tf.equal(count, 20)] = lambda: y
+      with tf.variable_scope("branch_21"):
+        y = self._conv_branch(inputs, [1,6], is_training, out_filters, out_filters,
+                              start_idx=0)
+        branches[tf.equal(count, 21)] = lambda: y
+      with tf.variable_scope("branch_22"):
+        y = self._conv_branch(inputs, [6,1], is_training, out_filters, out_filters,
+                              start_idx=0)
+        branches[tf.equal(count, 22)] = lambda: y
+      with tf.variable_scope("branch_23"):
+        y = self._conv_branch(inputs, [3,4], is_training, out_filters, out_filters,
+                              start_idx=0, separable=True)
+        branches[tf.equal(count, 23)] = lambda: y
+      with tf.variable_scope("branch_24"):
+        y = self._conv_branch(inputs, [4,3], is_training, out_filters, out_filters,
+                              start_idx=0, separable=True)
+        branches[tf.equal(count, 24)] = lambda: y
+      with tf.variable_scope("branch_25"):
+        y = self._conv_branch(inputs, [4,10], is_training, out_filters, out_filters,
+                              start_idx=0, separable=True)
+        branches[tf.equal(count, 25)] = lambda: y
+      with tf.variable_scope("branch_26"):
+        y = self._conv_branch(inputs, [10,4], is_training, out_filters, out_filters,
+                              start_idx=0, separable=True)
+        branches[tf.equal(count, 26)] = lambda: y
+      with tf.variable_scope("branch_27"):
+        y = self._conv_branch(inputs, [10,5], is_training, out_filters, out_filters,
+                              start_idx=0, separable=True)
+        branches[tf.equal(count, 27)] = lambda: y
+      with tf.variable_scope("branch_28"):
+        y = self._conv_branch(inputs, [5,10], is_training, out_filters, out_filters,
+                              start_idx=0, separable=True)
+        branches[tf.equal(count, 28)] = lambda: y
       out = tf.case(branches, default=lambda: tf.constant(0, tf.float32),
                     exclusive=True)
 
