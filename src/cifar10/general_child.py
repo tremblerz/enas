@@ -372,7 +372,7 @@ class GeneralChild(Model):
                               start_idx=0, separable=True)
         branches[tf.equal(count, 26)] = lambda: y
       with tf.variable_scope("branch_27"):
-        y = self._conv_branch(inputs, [10,5], is_training, out_filters, out_filters,
+        y = self._conv_branch(inputs, [7,4], is_training, out_filters, out_filters,
                               start_idx=0, separable=True)
         branches[tf.equal(count, 27)] = lambda: y
       with tf.variable_scope("branch_28"):
